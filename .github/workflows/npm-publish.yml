@@ -1,0 +1,40 @@
+# Publishes the foxplug CLI (cli/) to npm with npm trusted publishing (OIDC).
+# No npm token is stored anywhere: npm checks that this exact workflow in this repository asked,
+# and the run's short-lived OIDC identity is the credential. Nothing to renew.
+# Set up once on https://www.npmjs.com/package/foxplug/access (Trusted Publisher, GitHub Actions,
+# OsakaSaul / foxplug-changelog-action / npm-publish.yml, environment blank).
+#
+# Runs on a published GitHub release whose tag starts with cli-v (for example cli-v1.0.1), or by hand
+# from Actions -> npm-publish -> Run workflow. Either way, bump "version" in cli/package.json first:
+# npm refuses a version that was already published.
+name: npm-publish
+
+on:
+  release:
+    types: [published]
+  workflow_dispatch:
+
+permissions:
+  id-token: write
+  contents: read
+
+jobs:
+  publish:
+    if: github.event_name == 'workflow_dispatch' || startsWith(github.event.release.tag_name, 'cli-v')
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: cli
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22.14.0'
+          registry-url: 'https://registry.npmjs.org'
+      # Trusted publishing needs npm 11.5.1 or newer.
+      - run: npm install -g npm@latest
+      - run: npm --version
+      - name: Show what will be published
+        run: npm pack --dry-run
+      - name: Publish (no token: npm trusted publishing)
+        run: npm publish --access public
