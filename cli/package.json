@@ -1,6 +1,6 @@
 {
   "name": "foxplug",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Every release or push becomes a changelog entry and ready-to-post launch updates in FoxPlug, waiting for your approval. Works in GitLab CI, Bitbucket Pipelines, CircleCI or a terminal.",
   "bin": { "foxplug": "foxplug.js" },
   "files": ["foxplug.js", "README.md", "LICENSE"],

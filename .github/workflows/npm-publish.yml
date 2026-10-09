@@ -29,12 +29,13 @@ jobs:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
         with:
-          node-version: '22.14.0'
+          node-version: '24'
           registry-url: 'https://registry.npmjs.org'
-      # Trusted publishing needs npm 11.5.1 or newer.
-      - run: npm install -g npm@latest
+      # Trusted publishing needs npm 11.5.1 or newer. Pinned to the 11 line: npm@latest (12.x) needs
+      # Node 22.22.2+/24.15+ and broke the first run on Node 22.14 (EBADENGINE, T594).
+      - run: npm install -g npm@^11.5.1
       - run: npm --version
       - name: Show what will be published
         run: npm pack --dry-run
-      - name: Publish (no token: npm trusted publishing)
+      - name: "Publish (no token, npm trusted publishing)"
         run: npm publish --access public
